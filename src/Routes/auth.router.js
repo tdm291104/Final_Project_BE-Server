@@ -1,14 +1,15 @@
-const router = require('express').Router();
+const express = require('express');
 const passport = require('passport');
-require('dotenv').config();
+const router = express.Router();
 
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'], session: false }));
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
-router.get('/google/callback', (req, res, next) => {
-    passport.authenticate('google', (err, profile) => {
-        req.user = profile;
-        next()
-    })(req, res, next)
-}, (req, res) => {
-    res.redirect(`${process.env.URL_CLIENT}/login-success/${req.user?.id}/${req.user.tokenLogin}`)
-})
+router.get('/google/callback', 
+  passport.authenticate('google', { failureRedirect: '/error' }),
+  (req, res) => {
+    //Trả thông tin user về cho client
+    res.json(req.user);
+  }
+);
+
+module.exports = router;
