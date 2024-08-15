@@ -1,17 +1,32 @@
 const authServices = require('../Services/auth.service');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const userController = require('./user.controller')
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 const REFRESH_SECRET = process.env.REFRESH_TOKEN_SECRET;
 
-const register = async (req, res) => {
-    const user = req.body;
-    const query_user = await authServices.register(user);
-    if (query_user === 'USER_EXISTS') {
-        return res.status(400).json({ message: 'USER_EXISTS' });
+const register = async(req, res) =>
+{
+    try {
+        const user = await authServices.register(req.body);
+        if (user.error)
+        {
+            return res.status(400).json(user.error);
+        }
+        else if (user === "USER_EXISTS")
+        {
+            return res.status(400).json({ message: 'USER_EXISTS' });
+        }
+        res.status(201).json({
+            message: "Registered successfully",
+            user: user
+        })
+        
+    } catch (error) {
+        res.status(500).send('An error occurred');
+        
     }
-    res.json(query_user);
 }
 
 const login = async (req, res) => {

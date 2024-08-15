@@ -4,7 +4,7 @@ const conn = require('../Database/connection');
 
 const register = async (user) => {
     try {
-        const check = await conn.query('SELECT * FROM users WHERE username = ?', user.email);
+        const check = await conn.query('SELECT * FROM users WHERE email = ?', user.email);
         if(check[0].length > 0) return 'USER_EXISTS';
         const hash = await bcrypt.hash(user.password, 10);
         user.password = hash;
