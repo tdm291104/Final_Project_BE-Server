@@ -1,6 +1,7 @@
 const userServices = require('../Services/user.service');
 
 const getUserById = async (req, res) => {
+    console.log(req.cookies.refreshToken);
     const id = req.params.id;
     const user = await userServices.getOne(id);
     if (!user) {
