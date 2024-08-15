@@ -12,10 +12,17 @@ router.get('/auth/google/callback',
   authController.callbackGoogle
 );
 
-router.post('/refreshToken', authController.refreshToken);
 
-router.get('/logout', authController.logout);
+router.post('/auth/refreshToken', authController.refreshToken);
+
+router.get('/auth/logout', authController.logout);
 
 router.get('/user/:id', middleware.verifyToken, userController.getUserById);
+
+router.post('/auth/forgotPassword', authController.forgotPassword);
+
+router.post('/auth/checkOTP', authController.checkOTP);
+
+router.post('/auth/updatePassword', authController.updatePass);
 
 module.exports = router;
