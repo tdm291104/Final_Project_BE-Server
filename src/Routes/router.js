@@ -1,7 +1,6 @@
 const express = require('express');
 const passport = require('passport');
 const router = express.Router();
-const jwt = require('jsonwebtoken');
 const authController = require('../Controllers/auth.controller');
 const userController = require('../Controllers/user.controller');
 const middleware = require('../Middleware/verifyToken');
@@ -10,23 +9,20 @@ router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 
 
 router.get('/auth/google/callback', 
   passport.authenticate('google', { failureRedirect: '/error' }),
-  async (req, res) => {
-    const user = await userController.getUserByGoogleId(req.user.id);
-    if (!user) {
-      return res.status(404).json({ message: 'USER_NOT_FOUND' });
-    }
-
-    const token = jwt.sign(
-      { id: user.id },
-      process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: '1h' }
-    );
-    console.log(token)
-
-    res.redirect(`/login/success?token=${token}`);
-  }
+  authController.callbackGoogle
 );
 
+
+router.post('/auth/refreshToken', authController.refreshToken);
+
+router.get('/auth/logout', authController.logout);
+
 router.get('/user/:id', middleware.verifyToken, userController.getUserById);
+
+router.post('/auth/forgotPassword', authController.forgotPassword);
+
+router.post('/auth/checkOTP', authController.checkOTP);
+
+router.post('/auth/updatePassword', authController.updatePass);
 
 module.exports = router;
