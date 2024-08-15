@@ -21,11 +21,18 @@ const login = async (user) => {
         if(query_user[0].length === 0) return 'USER_NOT_FOUND';
         const compare = await bcrypt.compare(user.password, check[0][0].password);
 
-        const token = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+
+        const refreshToken = jwt.sign(
+            { id: user.id },
+            JWT_SECRET,
+            { expiresIn: '7d' }
+          );
         
         if(!compare) return 'PASSWORD_WRONG';
         return {
             token: token,
+            refreshToken: refreshToken,
             id: user.id, 
         };
     } catch (e) {
