@@ -1,4 +1,5 @@
 const conn = require('../Database/connection');
+const bcrypt = require('bcryptjs');
 
 const getAll = async () => {
     try {

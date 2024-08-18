@@ -2,6 +2,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const conn = require('../Database/connection');
 
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
+
 const register = async (user) => {
     try {
         const check = await conn.query('SELECT * FROM users WHERE username = ?', user.email);
@@ -17,23 +19,22 @@ const register = async (user) => {
 
 const login = async (user) => {
     try{
-        const query_user = await conn.query('SELECT * FROM users WHERE username = ?', user.username);
+        const query_user = await conn.query('SELECT * FROM users WHERE email = ?', [user.email]);
         if(query_user[0].length === 0) return 'USER_NOT_FOUND';
-        const compare = await bcrypt.compare(user.password, check[0][0].password);
+        const compare = await bcrypt.compare(user.password, query_user[0][0].password);
 
         const token = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
 
         const refreshToken = jwt.sign(
             { id: user.id },
-            JWT_SECRET,
+            REFRESH_TOKEN_SECRET,
             { expiresIn: '7d' }
-          );
-        
+        );
         if(!compare) return 'PASSWORD_WRONG';
         return {
             token: token,
             refreshToken: refreshToken,
-            id: user.id, 
+            id: query_user[0][0].id, 
         };
     } catch (e) {
         console.log(e);
