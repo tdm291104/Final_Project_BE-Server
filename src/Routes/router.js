@@ -22,22 +22,33 @@ router.get('/auth/google/callback',
 router.get('/auth/facebook',
   passport.authenticate('facebook'
   //   , {
-  //   scope: [ 'email']
+  //   scope: ['public_profile', 'email']
   // }
 ));
-
 
 router.get('/auth/facebook/callback',
   passport.authenticate('facebook', {
     failureRedirect: '/login'
   }),
-  authController.callbackFacebook);
+  (req, res) => {
+    // Successful authentication, redirect home.
+    res.redirect('/auth/facebook/success');
+  });
 
+router.get('/success', async (req, res) => {
+  const userInfo = {
+    id: req.user.id,
+    displayName: req.user.displayName,
+    provider: req.user.provider,
+  };
+  res.render('fb-success', { user: userInfo });
+});
 
 router.post('/refreshToken', authController.refreshToken);
-
-router.get('/logout', authController.logout);
-
+router.get('/auth/logout', authController.logout);
 router.get('/user/:id', middleware.verifyToken, userController.getUserById);
+router.post('/auth/forgotPassword', authController.forgotPassword);
+router.post('/auth/checkOTP', authController.checkOTP);
+router.post('/auth/updatePassword', authController.updatePass);
 
 module.exports = router;
