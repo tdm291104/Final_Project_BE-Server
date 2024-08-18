@@ -25,4 +25,6 @@ router.post('/auth/checkOTP', authController.checkOTP);
 
 router.post('/auth/updatePassword', authController.updatePass);
 
+router.post('/auth/login', authController.login);
+
 module.exports = router;

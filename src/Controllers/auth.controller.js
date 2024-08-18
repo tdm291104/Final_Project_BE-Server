@@ -27,10 +27,12 @@ const login = async (req, res) => {
     const user = req.body;
     const query_user = await authServices.login(user);
     if (query_user === 'USER_NOT_FOUND') {
-        return res.status(404).json({ message: 'User Not Found' });
+        res.status(404).json({ message: 'User Not Found' });
+        return 404;
     }
     if (query_user === 'PASSWORD_WRONG') {
-        return res.status(400).json({ message: 'Password Wrong' });
+        res.status(400).json({ message: 'Password Wrong' });
+        return 400;
     }
     res.json(query_user);
 }
@@ -83,7 +85,7 @@ const callbackGoogle = async (req, res) => {
       path: '/'
     });
 
-    res.redirect(`/login/success?token=${token}&refreshToken=${refreshToken}`);
+    res.redirect(`http://localhost:3000/Dashboard?id=${user.id}&token=${token}&refreshToken=${refreshToken}`);
 }
 
 const forgotPassword = async (req, res) => {
@@ -93,7 +95,7 @@ const forgotPassword = async (req, res) => {
         return res.status(404).json({ message: 'USER_NOT_FOUND' });
     }
     const otp = Math.floor(100000 + Math.random() * 900000);
-    // await sendMail.sendMail(email, otp);
+    await sendMail.sendMail(email, otp);
     console.log(otp);
     await redisClient.setEx(email, 300, otp.toString());
 
