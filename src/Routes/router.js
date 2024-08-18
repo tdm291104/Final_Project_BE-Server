@@ -8,12 +8,33 @@ const middleware = require('../Middleware/verifyToken');
 router.post('/auth/register', authController.register);
 router.post('/auth/login', authController.login);
 
-router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get('/auth/google', passport.authenticate('google', {
+  scope: ['profile', 'email']
+}));
 
-router.get('/auth/google/callback', 
-  passport.authenticate('google', { failureRedirect: '/error' }),
+router.get('/auth/google/callback',
+  passport.authenticate('google', {
+    failureRedirect: '/error'
+  }),
   authController.callbackGoogle
 );
+
+router.get('/auth/facebook',
+  passport.authenticate('facebook'
+  //   , {
+  //   scope: ['profile', 'email']
+  // }
+));
+
+
+router.get('/auth/facebook/callback',
+  passport.authenticate('facebook', {
+    failureRedirect: '/login'
+  }),
+  function (req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/');
+  });
 
 router.post('/refreshToken', authController.refreshToken);
 

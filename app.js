@@ -3,7 +3,8 @@ require('dotenv').config();
 const passport = require('passport');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
-require('./passport');
+require('./Google_Auth');
+require('./Facebook_Auth');
 const morgan = require('morgan');
 const PORT = process.env.PORT || 8080;
 const routerAuth = require('./src/Routes/router');
@@ -13,7 +14,7 @@ const app = express();
 app.use(function (req, res, next) {
 
   // Website you wish to allow to connect
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001');
 
   // Request methods you wish to allow
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
@@ -33,7 +34,7 @@ app.use(express.urlencoded({
 }));
 app.use(cookieParser());
 const corsOption = {
-  origin: ['http://localhost:3000'],
+  origin: ['http://localhost:3001'],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE"],
 }
