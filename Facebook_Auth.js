@@ -43,15 +43,15 @@ passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
-// passport.deserializeUser(async (id, done) => {
-//   try {
-//     const [rows] = await connection.query('SELECT * FROM users WHERE id = ?', [id]);
-//     const user = rows[0];
-//     if (!user) {
-//       return done(new Error('User not found'), null);
-//     }
-//     done(null, user);
-//   } catch (err) {
-//     done(err, null);
-//   }
-// });
+passport.deserializeUser(async (id, done) => {
+  try {
+    const [rows] = await connection.query('SELECT * FROM users WHERE id = ?', [id]);
+    const user = rows[0];
+    if (!user) {
+      return done(new Error('User not found'), null);
+    }
+    done(null, user);
+  } catch (err) {
+    done(err, null);
+  }
+});

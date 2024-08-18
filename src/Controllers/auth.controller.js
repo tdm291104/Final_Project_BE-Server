@@ -120,6 +120,17 @@ const callbackGoogle = async (req, res) => {
     res.redirect(`/login/success?token=${token}&refreshToken=${refreshToken}`);
 }
 
+const callbackFacebook = async (req, res)=>
+{
+    const user = await userController.getUserByFacebookId(req.user.id);
+    if (!user)
+    {
+        return res.status(404).json({
+            
+        });
+    }
+}
+
 
 module.exports = {
     register,

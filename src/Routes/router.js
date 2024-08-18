@@ -22,7 +22,7 @@ router.get('/auth/google/callback',
 router.get('/auth/facebook',
   passport.authenticate('facebook'
   //   , {
-  //   scope: ['profile', 'email']
+  //   scope: [ 'email']
   // }
 ));
 
@@ -31,10 +31,8 @@ router.get('/auth/facebook/callback',
   passport.authenticate('facebook', {
     failureRedirect: '/login'
   }),
-  function (req, res) {
-    // Successful authentication, redirect home.
-    res.redirect('/');
-  });
+  authController.callbackFacebook);
+
 
 router.post('/refreshToken', authController.refreshToken);
 
