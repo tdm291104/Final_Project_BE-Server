@@ -2,14 +2,15 @@ const authServices = require('../Services/auth.service');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const userController = require('./user.controller');
-const sendMail = require('../utils/sendMail');
-const redis = require('redis');
-const userServices = require('../Services/user.service');
-const redisClient = redis.createClient({
-    url: process.env.REDIS_URL || 'redis://127.0.0.1:6379'
-});
 
-redisClient.connect().catch(console.error);
+const sendMail = require('../utils/sendMail');
+// const redis = require('redis');
+const userServices = require('../Services/user.service');
+// const redisClient = redis.createClient({
+//     url: process.env.REDIS_URL || 'redis://127.0.0.1:6379'
+// });
+
+// redisClient.connect().catch(console.error);
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 const REFRESH_SECRET = process.env.REFRESH_TOKEN_SECRET;
@@ -125,9 +126,42 @@ const callbackGoogle = async (req, res) => {
         path: '/'
     });
 
-    res.redirect(`http://localhost:3000/Dashboard?id=${user.id}&token=${token}&refreshToken=${refreshToken}`);
+    res.redirect(`/login/success?token=${token}&refreshToken=${refreshToken}`);
 }
 
+const callbackFacebook = async (req, res) => {
+    const user = await userController.getUserByFaceId(req.user.id);
+    if (!user) {
+        return res.status(404).json({
+            message: 'USER_NOT_FOUND'
+        });
+    }
+
+    const token = jwt.sign({
+            id: user.id
+        },
+        ACCESS_TOKEN_SECRET, {
+            expiresIn: '15m'
+        }
+    );
+
+    const refreshToken = jwt.sign({
+            id: user.id
+        },
+        REFRESH_SECRET, {
+            expiresIn: '1d'
+        }
+    );
+
+    res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: false,
+        maxAge: 1 * 24 * 60 * 60 * 1000,
+        path: '/'
+    });
+
+    res.redirect(`/login/success?token=${token}&refreshToken=${refreshToken}`);
+}
 const forgotPassword = async (req, res) => {
     const { email } = req.body;
     const user = await userServices.getByEmail(email);
@@ -172,4 +206,4 @@ const updatePass = async (req, res) => {
     res.json({ message: 'Password Updated' });
 }
 
-module.exports = { register, login, logout, refreshToken, callbackGoogle, forgotPassword, checkOTP, updatePass };
+module.exports = { register, login, logout, refreshToken, callbackGoogle,callbackFacebook, forgotPassword, checkOTP, updatePass };

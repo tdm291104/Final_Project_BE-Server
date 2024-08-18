@@ -14,4 +14,10 @@ async function getUserByGoogleId (googleId) {
     return user;
 }
 
-module.exports = { getUserById, getUserByGoogleId };
+async function getUserByFaceId (facebookId) {
+    const user = await userServices.getByFacebookId(facebookId);
+    console.log ('user Face', user);
+    return user;
+}
+
+module.exports = { getUserById, getUserByGoogleId, getUserByFaceId};
