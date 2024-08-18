@@ -38,8 +38,16 @@ router.get('/auth/facebook/callback',
 
 router.post('/refreshToken', authController.refreshToken);
 
-router.get('/logout', authController.logout);
+router.get('/auth/logout', authController.logout);
 
 router.get('/user/:id', middleware.verifyToken, userController.getUserById);
+
+router.post('/auth/forgotPassword', authController.forgotPassword);
+
+router.post('/auth/checkOTP', authController.checkOTP);
+
+router.post('/auth/updatePassword', authController.updatePass);
+
+router.post('/auth/login', authController.login);
 
 module.exports = router;

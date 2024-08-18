@@ -3,6 +3,8 @@ require('dotenv').config();
 const passport = require('passport');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
+const RedisStore = require('connect-redis').default;
+const redis = require('redis');
 require('./Google_Auth');
 require('./Facebook_Auth');
 const morgan = require('morgan');
@@ -10,6 +12,18 @@ const PORT = process.env.PORT || 8080;
 const routerAuth = require('./src/Routes/router');
 const cors = require('cors');
 const app = express();
+const redisClient = redis.createClient({
+  url: process.env.REDIS_URL || 'redis://localhost:6379'
+});
+
+app.use(cors({
+  origin: 'http://localhost:3000', // Replace with your frontend URL
+  credentials: true
+}));
+
+redisClient.connect().catch(console.error);
+
+redisClient.on('error', (err) => console.error('Redis Client Error', err));
 
 app.use(function (req, res, next) {
 

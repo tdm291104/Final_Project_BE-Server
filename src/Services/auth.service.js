@@ -2,6 +2,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const conn = require('../Database/connection');
 
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
+
 const register = async (user) => {
     try {
         const check = await conn.query('SELECT * FROM users WHERE email = ?', user.email);
