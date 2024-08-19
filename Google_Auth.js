@@ -56,7 +56,7 @@ passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
-passport.deserializeUser1(async (id, done) => {
+passport.deserializeUser(async (id, done) => {
   try {
     const [rows] = await connection.query('SELECT * FROM users WHERE googleId = ?', [id]);
     const user = rows[0];

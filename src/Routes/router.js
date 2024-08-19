@@ -26,14 +26,14 @@ router.get('/auth/facebook',
   // }
 ));
 
+
 router.get('/auth/facebook/callback',
   passport.authenticate('facebook', {
-    failureRedirect: '/login'
+    failureRedirect: '/error'
   }),
-  (req, res) => {
-    // Successful authentication, redirect home.
-    res.redirect('/auth/facebook/success');
-  });
+  authController.callbackFacebook
+);
+
 
 router.get('/success', async (req, res) => {
   const userInfo = {
