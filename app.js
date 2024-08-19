@@ -5,7 +5,7 @@ const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const RedisStore = require('connect-redis').default;
 const redis = require('redis');
-require('./Google_Auth');
+// require('./Google_Auth');
 require('./Facebook_Auth');
 const morgan = require('morgan');
 const PORT = process.env.PORT || 8080;
@@ -17,7 +17,7 @@ const app = express();
 // });
 
 app.use(cors({
-  origin: 'http://localhost:3001', // Replace with your frontend URL
+  origin: 'http://localhost:3000', // Replace with your frontend URL
   credentials: true
 }));
 
