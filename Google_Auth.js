@@ -11,7 +11,7 @@ passport.use(new GoogleStrategy({
   callbackURL: '/api/v1/auth/google/callback'
 }, 
 async (accessToken, refreshToken, profile, done) => {
-  const [rows] = await connection.query('SELECT * FROM users WHERE googleId = ?', [profile.id]);
+  const [rows] = await connection.query('SELECT * FROM users WHERE email = ?', [profile.emails[0].value]);
   let user = rows[0];
 
   const password = Math.random().toString(36).slice(-8);
@@ -25,6 +25,10 @@ async (accessToken, refreshToken, profile, done) => {
       hashPassword
     ]);
     user = { id: result.id, googleId: profile.id, displayName: profile.displayName, email: profile.emails[0].value };
+  }
+
+  if (!user.googleId){
+    await connection.query('UPDATE users SET googleId = ? WHERE email = ?', [profile.id, profile.emails[0].value]);
   }
 
   return done(null, profile);

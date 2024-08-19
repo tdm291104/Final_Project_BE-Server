@@ -12,18 +12,18 @@ const PORT = process.env.PORT || 8080;
 const routerAuth = require('./src/Routes/router');
 const cors = require('cors');
 const app = express();
-// const redisClient = redis.createClient({
-//   url: process.env.REDIS_URL || 'redis://localhost:6379'
-// });
+const redisClient = redis.createClient({
+  url: process.env.REDIS_URL || 'redis://localhost:6379'
+});
 
 app.use(cors({
-  origin: 'http://localhost:3001', // Replace with your frontend URL
+  origin: 'http://localhost:3000', // Replace with your frontend URL
   credentials: true
 }));
 
-// redisClient.connect().catch(console.error);
+redisClient.connect().catch(console.error);
 
-// redisClient.on('error', (err) => console.error('Redis Client Error', err));
+redisClient.on('error', (err) => console.error('Redis Client Error', err));
 
 app.use(express.json());
 app.use(express.urlencoded({
