@@ -4,13 +4,13 @@ require('dotenv').config();
 const userController = require('./user.controller');
 
 const sendMail = require('../utils/sendMail');
-// const redis = require('redis');
+const redis = require('redis');
 const userServices = require('../Services/user.service');
-// const redisClient = redis.createClient({
-//     url: process.env.REDIS_URL || 'redis://127.0.0.1:6379'
-// });
+const redisClient = redis.createClient({
+    url: process.env.REDIS_URL || 'redis://127.0.0.1:6379'
+});
 
-// redisClient.connect().catch(console.error);
+redisClient.connect().catch(console.error);
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 const REFRESH_SECRET = process.env.REFRESH_TOKEN_SECRET;
@@ -51,8 +51,9 @@ const login = async (req, res) => {
             });
         }
         res.status(200).json({
-            message: "Login successfully",
-            query_user
+            token: query_user.token,
+            refreshToken: query_user.refreshToken,
+            id: query_user.id
         });
 
 
@@ -126,7 +127,7 @@ const callbackGoogle = async (req, res) => {
         path: '/'
     });
 
-    res.redirect(`/login/success?token=${token}&refreshToken=${refreshToken}`);
+    res.redirect(`http://localhost:3000/Dashboard?id=${user.id}&token=${token}&refreshToken=${refreshToken}`);
 }
 
 const callbackFacebook = async (req, res) => {
