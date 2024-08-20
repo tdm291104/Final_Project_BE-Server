@@ -2,10 +2,7 @@ const express = require('express');
 require('dotenv').config();
 const passport = require('passport');
 const session = require('express-session');
-const cookieParser = require('cookie-parser');
-const RedisStore = require('connect-redis').default;
 const redis = require('redis');
-// require('./Google_Auth');
 require('./passport');
 const morgan = require('morgan');
 const PORT = process.env.PORT || 8080;
@@ -17,7 +14,7 @@ const redisClient = redis.createClient({
 });
 
 app.use(cors({
-  origin: 'http://localhost:3000', // Replace with your frontend URL
+  origin: process.env.FRONTEND_URL, // Replace with your frontend URL
   credentials: true
 }));
 
@@ -30,7 +27,7 @@ app.use(express.urlencoded({
   extended: true
 }));
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'your_secret_key',
+  secret: process.env.SESSION_SECRET || 'secret_key',
   resave: false,
   saveUninitialized: true,
   cookie: {
