@@ -16,7 +16,6 @@ async function getUserByGoogleId (googleId) {
 
 async function getUserByFaceId (facebookId) {
     const user = await userServices.getByFacebookId(facebookId);
-    console.log ('user Face', user);
     return user;
 }
 

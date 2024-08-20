@@ -63,9 +63,24 @@ const login = async (req, res) => {
 }
 
 const logout = (req, res) => {
-    res.clearCookie('refreshToken');
-    res.redirect('/');
-}
+    req.logout(err => {
+      if (err) {
+        return res.status(500).send('An error occurred');
+      }
+
+      req.session.destroy(err => {
+        if (err) {
+          return res.status(500).send('Failed to destroy session');
+        }
+  
+        // Clear cookies
+        res.clearCookie('refreshToken');
+        res.clearCookie('connect.sid');
+        res.redirect('/');
+      });
+    });
+  };
+  
 
 const refreshToken = async (req, res) => {
     const {
@@ -95,9 +110,49 @@ const refreshToken = async (req, res) => {
         });
     }
 }
-
 const callbackGoogle = async (req, res) => {
-    const user = await userController.getUserByGoogleId(req.user.id);
+    try {
+        const user = await userController.getUserByGoogleId(req.user.id);
+        if (!user) {
+            return res.status(404).json({
+                message: 'USER_NOT_FOUND'
+            });
+        }
+
+        const token = jwt.sign({
+                id: user.id
+            },
+            ACCESS_TOKEN_SECRET, {
+                expiresIn: '15m'
+            }
+        );
+
+        const refreshToken = jwt.sign({
+                id: user.id
+            },
+            REFRESH_SECRET, {
+                expiresIn: '1d'
+            }
+        );
+
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: false,
+            maxAge: 1 * 24 * 60 * 60 * 1000,
+            path: '/'
+        });
+
+        res.redirect(`http://localhost:3000/Dashboard?id=${user.id}&token=${token}&refreshToken=${refreshToken}`);
+    } catch (error) {
+        console.error('Error in callbackGoogle:', error);
+        res.status(500).json({
+            message: 'INTERNAL_SERVER_ERROR'
+        });
+    }
+};
+
+const callbackFacebook = async (req, res) => {
+    const user = await userController.getUserByFaceId(req.user.facebookId);
     if (!user) {
         return res.status(404).json({
             message: 'USER_NOT_FOUND'
@@ -128,46 +183,17 @@ const callbackGoogle = async (req, res) => {
     });
 
     res.redirect(`http://localhost:3000/Dashboard?id=${user.id}&token=${token}&refreshToken=${refreshToken}`);
-}
+};
 
-const callbackFacebook = async (req, res) => {
-    const user = await userController.getUserByFaceId(req.user.id);
+const forgotPassword = async (req, res) => {
+    const {
+        email
+    } = req.body;
+    const user = await userServices.getByEmail(email);
     if (!user) {
         return res.status(404).json({
             message: 'USER_NOT_FOUND'
         });
-    }
-
-    const token = jwt.sign({
-            id: user.id
-        },
-        ACCESS_TOKEN_SECRET, {
-            expiresIn: '15m'
-        }
-    );
-
-    const refreshToken = jwt.sign({
-            id: user.id
-        },
-        REFRESH_SECRET, {
-            expiresIn: '1d'
-        }
-    );
-
-    res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: false,
-        maxAge: 1 * 24 * 60 * 60 * 1000,
-        path: '/'
-    });
-
-    res.redirect(`/login/success?token=${token}&refreshToken=${refreshToken}`);
-}
-const forgotPassword = async (req, res) => {
-    const { email } = req.body;
-    const user = await userServices.getByEmail(email);
-    if (!user) {
-        return res.status(404).json({ message: 'USER_NOT_FOUND' });
     }
     const otp = Math.floor(100000 + Math.random() * 900000);
     await sendMail.sendMail(email, otp);
@@ -179,32 +205,60 @@ const forgotPassword = async (req, res) => {
         console.log(`OTP deleted`);
     }, 15000);
 
-    res.json({ message: 'OTP_SENT' });
+    res.json({
+        message: 'OTP_SENT'
+    });
 }
 
 const checkOTP = async (req, res) => {
-    const { email, otp } = req.body;
+    const {
+        email,
+        otp
+    } = req.body;
     const user = await userServices.getByEmail(email);
     if (!user) {
-        return res.status(404).json({ message: 'USER_NOT_FOUND' });
+        return res.status(404).json({
+            message: 'USER_NOT_FOUND'
+        });
     }
     const storedOtp = await redisClient.get(email);
     if (otp !== storedOtp) {
-        return res.status(400).json({ message: 'OTP_WRONG' });
+        return res.status(400).json({
+            message: 'OTP_WRONG'
+        });
     }
 
-    res.json({ message: 'OTP_CORRECT' });
+    res.json({
+        message: 'OTP_CORRECT'
+    });
     await redisClient.del(email);
 }
 
 const updatePass = async (req, res) => {
-    const { email, password } = req.body;
+    const {
+        email,
+        password
+    } = req.body;
     const user = await userServices.getByEmail(email);
     if (!user) {
-        return res.status(404).json({ message: 'USER_NOT_FOUND' });
+        return res.status(404).json({
+            message: 'USER_NOT_FOUND'
+        });
     }
     await userServices.updatePass(email, password);
-    res.json({ message: 'Password Updated' });
+    res.json({
+        message: 'Password Updated'
+    });
 }
 
-module.exports = { register, login, logout, refreshToken, callbackGoogle,callbackFacebook, forgotPassword, checkOTP, updatePass };
+module.exports = {
+    register,
+    login,
+    logout,
+    refreshToken,
+    callbackGoogle,
+    callbackFacebook,
+    forgotPassword,
+    checkOTP,
+    updatePass
+};
