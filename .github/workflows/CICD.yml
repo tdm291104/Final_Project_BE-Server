@@ -45,8 +45,8 @@ jobs:
         echo "$SSH_PRIVATE_KEY" > id_rsa
         chmod 600 id_rsa
         ssh -i id_rsa ubuntu@3.25.83.75 << 'EOF'
-          docker stop final_be-node-app
-          docker rm final_be-node-app
+          docker stop finalBE-node-app
+          docker rm finalBE-node-app
           docker rmi ${{ secrets.DOCKER_USERNAME }}/final_be-node-app:latest
           docker-compose up -d
         EOF
