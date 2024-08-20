@@ -1,7 +1,6 @@
 const userServices = require('../Services/user.service');
 
 const getUserById = async (req, res) => {
-    console.log(req.cookies.refreshToken);
     const id = req.params.id;
     const user = await userServices.getOne(id);
     if (!user) {
@@ -15,4 +14,9 @@ async function getUserByGoogleId (googleId) {
     return user;
 }
 
-module.exports = { getUserById, getUserByGoogleId };
+async function getUserByFaceId (facebookId) {
+    const user = await userServices.getByFacebookId(facebookId);
+    return user;
+}
+
+module.exports = { getUserById, getUserByGoogleId, getUserByFaceId};

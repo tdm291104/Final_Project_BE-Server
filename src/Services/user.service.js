@@ -1,4 +1,5 @@
 const conn = require('../Database/connection');
+const bcrypt = require('bcryptjs');
 
 const getAll = async () => {
     try {
@@ -27,6 +28,17 @@ const getByGoogleId = async (googleId) => {
     }
 }
 
+const getByFacebookId = async (facebookId) => {
+    try {
+        const [user] = await conn.query('SELECT id, facebookId, email, displayName FROM users WHERE facebookId = ?', [facebookId]);
+        // console.log (user[0]);
+        return user[0];
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+
 const getByEmail = async (email) => {
     try {
         const [user] = await conn.query('SELECT id, googleId, displayName, email FROM users WHERE email = ?', [email]);
@@ -46,4 +58,4 @@ const updatePass = async (email, password) => {
     }
 }
 
-module.exports = { getAll, getOne, getByGoogleId, getByEmail, updatePass };
+module.exports = { getAll, getOne, getByGoogleId,getByFacebookId, getByEmail, updatePass };

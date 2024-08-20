@@ -1,0 +1,39 @@
+services:
+  node-app:
+    build: .
+    ports:
+      - 3000:3000
+    env_file:
+      - ./.env
+    container_name: finalBE-node-app
+    environment:
+      - DATABASE=${DATABASE}
+      - PASSWORD=${PASSWORD_DATABASE}
+      - HOST=final_be-mysql-1
+      - USER_NAME=${USERNAME_DATABASE}
+    depends_on:
+      - mysql
+    volumes:
+      - ./:/app
+    networks:
+      - my-network
+
+  mysql:
+    image: mysql:8.0
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: ${PASSWORD_DATABASE}
+      MYSQL_DATABASE: ${DATABASE}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    restart: always
+    networks:
+      - my-network
+      
+volumes:
+  mysql-data:
+
+networks:
+  my-network:
+    driver: bridge  
