@@ -21,10 +21,13 @@ router.get('/auth/google/callback',
 
 router.get('/auth/facebook',
   passport.authenticate('facebook'
-  //   , {
-  //   scope: ['public_profile', 'email']
-  // }
-));
+      , {
+      scope: ['public_profile', 'email']
+    }
+    // , {
+    //   scope: 'email'
+    // }
+  ));
 
 
 router.get('/auth/facebook/callback',
@@ -41,7 +44,9 @@ router.get('/success', async (req, res) => {
     displayName: req.user.displayName,
     provider: req.user.provider,
   };
-  res.render('fb-success', { user: userInfo });
+  res.render('fb-success', {
+    user: userInfo
+  });
 });
 
 router.post('/refreshToken', authController.refreshToken);

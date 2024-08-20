@@ -30,8 +30,8 @@ const getByGoogleId = async (googleId) => {
 
 const getByFacebookId = async (facebookId) => {
     try {
-        const [user] = await conn.query('SELECT id, facebookId, displayName FROM users WHERE facebookId = ?', [facebookId]);
-        console.log (user[0]);
+        const [user] = await conn.query('SELECT id, facebookId, email, displayName FROM users WHERE facebookId = ?', [facebookId]);
+        // console.log (user[0]);
         return user[0];
     } catch (e) {
         console.log(e);
