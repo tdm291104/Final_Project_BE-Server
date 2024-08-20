@@ -142,7 +142,7 @@ const callbackGoogle = async (req, res) => {
             path: '/'
         });
 
-        res.redirect(`http://localhost:3000/Dashboard?id=${user.id}&token=${token}&refreshToken=${refreshToken}`);
+        res.redirect(`https://sgroup.dilysnguyen.io.vn/Dashboard?id=${user.id}&token=${token}&refreshToken=${refreshToken}`);
     } catch (error) {
         console.error('Error in callbackGoogle:', error);
         res.status(500).json({
@@ -182,7 +182,7 @@ const callbackFacebook = async (req, res) => {
         path: '/'
     });
 
-    res.redirect(`http://localhost:3000/Dashboard?id=${user.id}&token=${token}&refreshToken=${refreshToken}`);
+    res.redirect(`https://sgroup.dilysnguyen.io.vn/Dashboard?id=${user.id}&token=${token}&refreshToken=${refreshToken}`);
 };
 
 const forgotPassword = async (req, res) => {

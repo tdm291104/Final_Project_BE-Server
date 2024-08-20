@@ -1,7 +1,6 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
-const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcryptjs');
 const connection = require('./src/Database/connection');
 require('dotenv').config();
