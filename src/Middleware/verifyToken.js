@@ -3,8 +3,13 @@ const jwt = require('jsonwebtoken');
 
 const verifyToken = async (req, res, next) => {
     const token = req.header('Authorization');
+    console.log(token);
+    if (!token) {
+        res.sendStatus(401);
+        return 401;
+    }
     const tokenNew = token.replace('Bearer ', '');
-    if (tokenNew === 'null') {
+    if (tokenNew === 'null' || tokenNew === '') {
         res.sendStatus(401);
         return 401;
     }
